@@ -1,0 +1,4 @@
+test-plus/gen.c: In function ‘main’:
+test-plus/gen.c:3:7: warning: unused variable ‘y’ [-Wunused-variable]
+ int x,y;
+       ^
