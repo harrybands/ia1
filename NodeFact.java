@@ -1,1 +1,2 @@
-public abstract class NodeFact extends Node {}
+public abstract class NodeFact extends Node {
+}

@@ -4,9 +4,9 @@ public class NodeAssn extends Node {
 	private NodeExpr expr;
 
 	/*
-	 * 
-	 * Constructor of NodeAssn, created an assigned block. 
-	 * 
+	 *
+	 * Constructor of NodeAssn, created an assigned block.
+	 *
 	 */
 	public NodeAssn(String id, NodeExpr expr) {
 		this.id = id;
@@ -23,7 +23,12 @@ public class NodeAssn extends Node {
 	 */
 	@Override
 	public String code() {
+
+		// Print the value of the assignment
 		return id + "=" + expr.code() + ";" + new NodeWr(expr).code();
+
+		// Don't print the value of the assignment
+		// return id + "=" + expr.code() + ";";
 	}
 
 }

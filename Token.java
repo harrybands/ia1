@@ -15,36 +15,42 @@ public class Token {
 	 * @param lexeme
 	 */
 	public Token(String token, String lexeme) {
-		this.token=token;
-		this.lexeme=lexeme;
+		this.token = token;
+		this.lexeme = lexeme;
 	}
 
 	/**
 	 * 
-	 * Second Constructor 
+	 * Second Constructor
 	 * 
 	 * @param token
 	 */
 	public Token(String token) {
-		this(token,token);
+		this(token, token);
 	}
 
 	/**
-	 * Return the token part of the token 
-	 * @return token 
+	 * Return the token part of the token
+	 * 
+	 * @return token
 	 */
-	public String tok() { return token; }
+	public String tok() {
+		return token;
+	}
 
 	/**
 	 * 
-	 * Return the lexeme part of the token 
-	 * @return lexeme 
+	 * Return the lexeme part of the token
+	 * 
+	 * @return lexeme
 	 */
-	public String lex() { return lexeme; }
+	public String lex() {
+		return lexeme;
+	}
 
 	/**
 	 * 
-	 * Method comparing tokens   
+	 * Method comparing tokens
 	 * 
 	 * @param t
 	 * @return
@@ -55,11 +61,12 @@ public class Token {
 
 	/**
 	 * 
-	 * ToString method 
+	 * ToString method
+	 * 
 	 * @return strings of the token with token and lexeme information
 	 */
 	public String toString() {
-		return "<"+tok()+","+lex()+">";
+		return "<" + tok() + "," + lex() + ">";
 	}
 
 }

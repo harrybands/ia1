@@ -3,15 +3,16 @@ public class NodeFactNum extends NodeFact {
 	private String num;
 
 	/**
- 	* Constructor of Node Fact Number 
- 	* @param num
- 	*/
+	 * Constructor of Node Fact Number
+	 * 
+	 * @param num
+	 */
 	public NodeFactNum(String num) {
-		this.num=num;
+		this.num = num;
 	}
 
 	/*
-	 * Run in the environment 
+	 * Run in the environment
 	 */
 	@Override
 	public double eval(Environment env) throws EvalException {
@@ -22,6 +23,8 @@ public class NodeFactNum extends NodeFact {
 	 * Keep the code running with the given number in fact
 	 */
 	@Override
-	public String code() { return num; }
+	public String code() {
+		return num;
+	}
 
 }

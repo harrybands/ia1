@@ -7,19 +7,19 @@ public class EvalException extends Exception {
 	 * Constructor to throwing specific exception
 	 */
 	public EvalException(int pos, String msg) {
-		this.pos=pos;
-		this.msg=msg;
+		this.pos = pos;
+		this.msg = msg;
 	}
 
 	/*
 	 * 
-	 * toString method to concatenate 
+	 * toString method to concatenate
 	 * 
 	 */
 	public String toString() {
 		return "eval error"
-			+", pos="+pos
-			+", "+msg;
+				+ ", pos=" + pos
+				+ ", " + msg;
 	}
 
 }

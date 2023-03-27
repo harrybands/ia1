@@ -3,19 +3,14 @@
 // It constructs and has-a Scanner for the program
 // being parsed.
 
-/**
- * 
- * Constructor of the Parser function 
- * 
- */
 public class Parser {
 
-	private Scanner scanner; // Create scanner to scan value 
+	private Scanner scanner;
 
 	/**
-	 * 
-	 * check if syntax are matched 
-	 * 
+	 *
+	 * check if syntax are matched
+	 *
 	 * @param s
 	 * @throws SyntaxException
 	 */
@@ -24,8 +19,8 @@ public class Parser {
 	}
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @return
 	 * @throws SyntaxException
 	 */
@@ -34,20 +29,20 @@ public class Parser {
 	}
 
 	/**
-	 * 
-	 * Method return the most recent postion in the scanner 
-	 * 
-	 * @return the most recent position being scanned 
+	 *
+	 * Method return the most recent postion in the scanner
+	 *
+	 * @return the most recent position being scanned
 	 */
 	private int pos() {
 		return scanner.pos();
 	}
 
 	/**
-	 * 
-	 * Method to parse in the Multiplication options 
-	 * 
-	 * @return Mul node 
+	 *
+	 * Method to parse in the Multiplication options
+	 *
+	 * @return Mul node
 	 * @throws SyntaxException
 	 */
 	private NodeMulop parseMulop() throws SyntaxException {
@@ -63,9 +58,9 @@ public class Parser {
 	}
 
 	/**
-	 * 
-	 * Method to parse in the Adding options 
-	 * 
+	 *
+	 * Method to parse in the Adding options
+	 *
 	 * @return Add node
 	 * @throws SyntaxException
 	 */
@@ -82,10 +77,10 @@ public class Parser {
 	}
 
 	/**
-	 * 
+	 *
 	 * Method to parse in the fact node
-	 * 
-	 * @return a Fact node 
+	 *
+	 * @return a Fact node
 	 * @throws SyntaxException
 	 */
 	private NodeFact parseFact() throws SyntaxException {
@@ -99,6 +94,11 @@ public class Parser {
 			Token id = curr();
 			match("id");
 			return new NodeFactId(pos(), id.lex());
+		}
+		if (curr().equals(new Token("-"))) {
+			match("-");
+			NodeFact fact = parseFact();
+			return new NodeFactSign(fact);
 		}
 		Token num = curr();
 		match("num");
@@ -134,107 +134,221 @@ public class Parser {
 		return assn;
 	}
 
-	private NodeStmt parseStmt() throws SyntaxException {
-		NodeAssn assn = parseAssn();
-		match(";");
-		NodeStmt stmt = new NodeStmt(assn);
-		return stmt;
-	}
-
+	/**
+	 * Parser for a boolean expression: expr relop expr (left-epxr relop right-expr)
+	 *
+	 * @return
+	 * @throws SyntaxException
+	 */
 	private NodeBoolExpr parseBoolExpr() throws SyntaxException {
 		NodeExpr expr1 = parseExpr();
 		NodeRelop relop = parseRelop();
 		NodeExpr expr2 = parseExpr();
 		return new NodeBoolExpr(expr1, relop, expr2);
-	}	
+	}
 
+	/**
+	 * Parse a Write statement
+	 *
+	 * @return
+	 * @throws SyntaxException
+	 */
 	private NodeWr parseWr() throws SyntaxException {
 		match("wr");
 		NodeExpr expr = parseExpr();
 		return new NodeWr(expr);
 	}
 
+	/**
+	 * Parse a Read statement
+	 *
+	 * @return
+	 * @throws SyntaxException
+	 */
 	private NodeRd parseRd() throws SyntaxException {
 		match("rd");
-		String id = curr().lex();
+		Token id = curr();
 		match("id");
-		return new NodeRd(id);
+		return new NodeRd(id.lex());
 	}
 
-	private NodeIfElse parseIfElse() throws SyntaxException {
+	/**
+	 * Parse an If statement
+	 *
+	 * @return NodeBoolExpr
+	 * @throws SyntaxException
+	 */
+	private NodeBoolExpr parseIf() throws SyntaxException {
 		match("if");
-		NodeBoolExpr boolexpr = parseBoolExpr();
+		return parseBoolExpr();
+	}
+
+	/**
+	 * Parse a Then statement
+	 *
+	 * @return NodeStmt
+	 * @throws SyntaxException
+	 */
+	private NodeStmt parseThen() throws SyntaxException {
 		match("then");
-		NodeStmt ifstmt = parseStmt();
-		NodeStmt elsestmt = null;
-		if (curr().equals(new Token("else"))) {
-			match("else");
-			elsestmt = parseStmt();
-		}
-		return new NodeIfElse(boolexpr, ifstmt, elsestmt);
+		return parseStmt();
 	}
 
-	private NodeWhileDo parseWhileDo() throws SyntaxException {
+	/**
+	 * Parse an Else statement
+	 *
+	 * @return NodeStmt
+	 * @throws SyntaxException
+	 */
+	private NodeStmt parseElse() throws SyntaxException {
+		match("else");
+		return parseStmt();
+	}
+
+	/**
+	 * Parse a While statement
+	 *
+	 * @return NodeBoolExpr
+	 * @throws SyntaxException
+	 */
+	private NodeBoolExpr parseWhile() throws SyntaxException {
 		match("while");
-		NodeBoolExpr boolexpr = parseBoolExpr();
-		match("do");
-		NodeStmt stmt = parseStmt();
-		return new NodeWhileDo(boolexpr, stmt);
+		return parseBoolExpr();
 	}
 
+	/**
+	 * Parse a Do statement
+	 *
+	 * @return NodeStmt
+	 * @throws SyntaxException
+	 */
+	private NodeStmt parseDo() throws SyntaxException {
+		match("do");
+		return parseStmt();
+	}
 
+	/**
+	 * Parse a statement
+	 * (Inspired by `fact` -> we create project inherits from NodeStmt)
+	 *
+	 * @return
+	 * @throws SyntaxException
+	 */
+	private NodeStmt parseStmt() throws SyntaxException {
 
+		if (curr().equals(new Token("id"))) {
+			// deal with assn
+			NodeAssn assn = parseAssn();
+			return new NodeStmtAssn(assn);
+		}
 
+		if (curr().equals(new Token("rd"))) {
+			// deal with rd
+			NodeRd rd = parseRd();
+			return new NodeStmtRd(rd);
+		}
 
-	/**	
-	* This method parse a new node called relop for boolean expression	
-    * @return new node relop	
-    * @throws SyntaxException	
-    */	
+		if (curr().equals(new Token("wr"))) {
+			NodeWr wr = parseWr();
+			return new NodeStmtWr(wr);
+		}
 
+		if (curr().equals(new Token("if"))) {
+			NodeBoolExpr BoolExp = parseIf();
+			NodeStmt IfThen = parseThen();
+
+			if (curr().lex().equals("else")) {
+				NodeStmt Else = parseElse();
+				return new NodeIfThenElse(BoolExp, IfThen, Else);
+			}
+
+			return new NodeIfThen(BoolExp, IfThen);
+
+		}
+
+		if (curr().equals(new Token("while"))) {
+			NodeBoolExpr BoolExp = parseWhile();
+			NodeStmt While = parseDo();
+			return new NodeWhile(BoolExp, While);
+		}
+
+		// 'begin' block 'end'
+		match("begin");
+		NodeBlock block = parseBlock();
+		match("end");
+
+		return new NodeStmtBeginEnd(block);
+	}
+
+	/**
+	 * This method parse a new node called relop for boolean expression
+	 *
+	 * @return new node relop
+	 * @throws SyntaxException
+	 */
 	private NodeRelop parseRelop() throws SyntaxException {
 		if (curr().equals(new Token("<"))) {
 			match("<");
-			return new NodeRelop(pos(),"<");
+			return new NodeRelop(pos(), "<");
 		}
 		if (curr().equals(new Token("<="))) {
 			match("<=");
-			return new NodeRelop(pos(),"<=");
+			return new NodeRelop(pos(), "<=");
 		}
 		if (curr().equals(new Token(">"))) {
 			match(">");
-			return new NodeRelop(pos(),">");
+			return new NodeRelop(pos(), ">");
 		}
 		if (curr().equals(new Token(">="))) {
 			match(">=");
-			return new NodeRelop(pos(),">=");
+			return new NodeRelop(pos(), ">=");
 		}
 		if (curr().equals(new Token("<>"))) {
 			match("<>");
-			return new NodeRelop(pos(),"<>");
+			return new NodeRelop(pos(), "<>");
 		}
 		if (curr().equals(new Token("=="))) {
 			match("==");
-			return new NodeRelop(pos(),"==");
+			return new NodeRelop(pos(), "==");
 		}
 		return null;
 	}
 
+	/**
+	 * Parse block
+	 *
+	 * @return
+	 * @throws SyntaxException
+	 */
+	private NodeBlock parseBlock() throws SyntaxException {
+		NodeStmt stmt = parseStmt();
+
+		// stmt ; block
+		if (curr().equals(new Token(";"))) {
+			match(";");
+			NodeBlock block = parseBlock();
+			return new NodeBlock(stmt, block);
+		}
+
+		// stmt
+		return new NodeBlock(stmt, null);
+	}
 
 	/**
-	 * 
-	 * Method to parse the program 
-	 * 
+	 *
+	 * Method to parse the program
+	 *
 	 * @param program
-	 * @return new Program node 
+	 * @return new Program node
 	 * @throws SyntaxException
 	 */
 	public Node parse(String program) throws SyntaxException {
 		scanner = new Scanner(program);
 		scanner.next();
-		NodeStmt stmt = parseStmt();
+
+		NodeBlock block = parseBlock();
 		match("EOF");
-		return stmt;
+		return block;
 	}
 
 }

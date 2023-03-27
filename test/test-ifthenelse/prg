@@ -1,0 +1,1 @@
+x=4; if x > 4 then wr 100 else wr 200
